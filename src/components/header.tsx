@@ -11,6 +11,7 @@ type Props = {
   setErrorMessage: (text: string) => void;
   loading: boolean;
   todos: Todo[];
+  toggleAll: () => void;
 };
 
 export const Header: React.FC<Props> = ({
@@ -21,6 +22,7 @@ export const Header: React.FC<Props> = ({
   setErrorMessage,
   loading,
   todos,
+  toggleAll,
 }) => {
   const titleField = useRef<HTMLInputElement>(null);
 
@@ -64,6 +66,7 @@ export const Header: React.FC<Props> = ({
         type="button"
         className={cn('todoapp__toggle-all', { active: allActive })}
         data-cy="ToggleAllButton"
+        onClick={toggleAll}
       />
 
       {/* Add a todo on form submit */}

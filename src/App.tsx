@@ -5,7 +5,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Todo } from './types/Todo';
 import { Filter } from './types/Filters';
 import { UserWarning } from './UserWarning';
-import { createTodo, USER_ID, getTodos, deleteTodo } from './api/todos';
+import {
+  createTodo,
+  USER_ID,
+  getTodos,
+  deleteTodo,
+  updateTodo,
+} from './api/todos';
 import { Header } from './components/header';
 import { TodoList } from './components/todoList';
 import { Footer } from './components/footer';
@@ -17,6 +23,7 @@ export const App: React.FC = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [filter, setFilter] = useState(Filter.all);
   const [loading, setLoading] = useState(false);
+  const [currentId, setCurrentId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
 
   function getVisibleTodos(filt: Filter) {
@@ -41,7 +48,7 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => setLoading(false));
-  }, [todos]);
+  }, []);
 
   const allActive = useMemo(() => {
     return todos.every(todo => todo.completed);
@@ -70,7 +77,6 @@ export const App: React.FC = () => {
         setTodos(currentTodos => [...currentTodos, newTodo]);
         setTodoTitle('');
       })
-
       .catch(() => {
         setErrorMessage('Unable to add a todo');
         setTempTodo(null);
@@ -101,6 +107,34 @@ export const App: React.FC = () => {
       .forEach(todo => deleteOneTodo(todo.id));
   }
 
+  function toggleTodo({ id, title, completed }: Omit<Todo, 'userId'>) {
+    updateTodo({ id, title, completed: !completed })
+      .then(() => {
+        setTodos((currentTodos: Todo[]) =>
+          currentTodos.map(todo =>
+            todo.id === id ? { ...todo, completed: !completed } : todo,
+          ),
+        );
+      })
+      .catch(() => {
+        setErrorMessage('Unable to update a todo');
+        setTimeout(() => setErrorMessage(''), 3000);
+      })
+      .finally(() => setCurrentId(null));
+  }
+
+  const toggleAll = () => {
+    const allCompleted = complete.length === todos.length;
+
+    todos.forEach(todo => {
+      return toggleTodo({
+        id: todo.id,
+        title: todo.title,
+        completed: !allCompleted,
+      });
+    });
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -118,12 +152,16 @@ export const App: React.FC = () => {
           allActive={allActive}
           setErrorMessage={setErrorMessage}
           loading={loading}
+          toggleAll={toggleAll}
         />
 
         <TodoList
           visibleTodos={getVisibleTodos(filter)}
           deleteOneTodo={deleteOneTodo}
           tempTodo={tempTodo}
+          currentId={currentId}
+          setCurrentId={setCurrentId}
+          toggleTodo={toggleTodo}
         />
 
         {todos.length > 0 && (
@@ -140,4 +178,3 @@ export const App: React.FC = () => {
     </div>
   );
 };
-
