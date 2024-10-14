@@ -50,7 +50,7 @@ export const App: React.FC = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  const allActive = useMemo(() => {
+  const allComleted = useMemo(() => {
     return todos.every(todo => todo.completed);
   }, [todos]);
 
@@ -132,7 +132,11 @@ export const App: React.FC = () => {
   }
 
   const toggleAll = () => {
-    todos.forEach(todo => {
+    if (allComleted) {
+      todos.forEach(todo => {return toggleTodo(todo.id)});
+    } 
+
+    todos.filter(todo => todo.completed === allComleted).forEach(todo => {
       return toggleTodo(todo.id);
     });
   };
@@ -151,7 +155,7 @@ export const App: React.FC = () => {
           todoTitle={todoTitle}
           setTodoTitle={setTodoTitle}
           addTodo={addTodo}
-          allActive={allActive}
+          allComleted={allComleted}
           setErrorMessage={setErrorMessage}
           loading={loading}
           toggleAll={toggleAll}
