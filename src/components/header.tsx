@@ -62,12 +62,12 @@ export const Header: React.FC<Props> = ({
   return (
     <header className="todoapp__header">
       {/* this button should have `active` class only if all todos are completed */}
-      <button
+      {todos.length > 0 && (<button
         type="button"
         className={cn('todoapp__toggle-all', { active: allActive })}
         data-cy="ToggleAllButton"
         onClick={toggleAll}
-      />
+      />)}
 
       {/* Add a todo on form submit */}
       <form>

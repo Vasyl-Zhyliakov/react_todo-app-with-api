@@ -108,26 +108,26 @@ export const App: React.FC = () => {
   }
 
   function toggleTodo(id: number) {
-    const updatedTodo = todos.find(todo => todo.id === id)
-    
+    const updatedTodo = todos.find(todo => todo.id === id);
+
     if (updatedTodo) {
       updateTodo({
-      id,
-      title: updatedTodo?.title,
-      completed: !updatedTodo.completed
-    })
-      .then(() => {
-        setTodos((currentTodos: Todo[]) =>
-          currentTodos.map(todo =>
-            todo.id === id ? { ...todo, completed: !todo.completed } : todo,
-          ),
-        );
+        id,
+        title: updatedTodo?.title,
+        completed: !updatedTodo.completed,
       })
-      .catch(() => {
-        setErrorMessage('Unable to update a todo');
-        setTimeout(() => setErrorMessage(''), 3000);
-      })
-      .finally(() => setCurrentId(null));
+        .then(() => {
+          setTodos((currentTodos: Todo[]) =>
+            currentTodos.map(todo =>
+              todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+            ),
+          );
+        })
+        .catch(() => {
+          setErrorMessage('Unable to update a todo');
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setCurrentId(null));
     }
   }
 
