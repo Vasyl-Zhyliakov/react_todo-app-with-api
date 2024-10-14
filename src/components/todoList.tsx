@@ -7,7 +7,7 @@ type Props = {
   visibleTodos: Todo[];
   deleteOneTodo: (id: number) => void;
   tempTodo: Todo | null;
-  toggleTodo: ({ id, title, completed }: Omit<Todo, 'userId'>) => void;
+  toggleTodo: (id: number) => void;
   currentId: number | null;
   setCurrentId: (id: number | null) => void;
 };
@@ -25,9 +25,9 @@ export const TodoList: React.FC<Props> = ({
     deleteOneTodo(id);
   };
 
-  const handleToggle = ({ id, title, completed }: Omit<Todo, 'userId'>) => {
+  const handleToggle = (id: number) => {
     setCurrentId(id);
-    toggleTodo({ id, title, completed });
+    toggleTodo(id);
   };
 
   return (
@@ -46,13 +46,7 @@ export const TodoList: React.FC<Props> = ({
               className="todo__status"
               checked={todo.completed}
               id={todo.id.toString()}
-              onClick={() => {
-                handleToggle({
-                  id: todo.id,
-                  title: todo.title,
-                  completed: todo.completed,
-                });
-              }}
+              onClick={() => handleToggle(todo.id)}
             />
           </label>
 

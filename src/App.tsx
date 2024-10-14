@@ -107,12 +107,19 @@ export const App: React.FC = () => {
       .forEach(todo => deleteOneTodo(todo.id));
   }
 
-  function toggleTodo({ id, title, completed }: Omit<Todo, 'userId'>) {
-    updateTodo({ id, title, completed: !completed })
+  function toggleTodo(id: number) {
+    const updatedTodo = todos.find(todo => todo.id === id)
+    
+    if (updatedTodo) {
+      updateTodo({
+      id,
+      title: updatedTodo?.title,
+      completed: !updatedTodo.completed
+    })
       .then(() => {
         setTodos((currentTodos: Todo[]) =>
           currentTodos.map(todo =>
-            todo.id === id ? { ...todo, completed: !completed } : todo,
+            todo.id === id ? { ...todo, completed: !todo.completed } : todo,
           ),
         );
       })
@@ -121,17 +128,12 @@ export const App: React.FC = () => {
         setTimeout(() => setErrorMessage(''), 3000);
       })
       .finally(() => setCurrentId(null));
+    }
   }
 
   const toggleAll = () => {
-    const allCompleted = complete.length === todos.length;
-
     todos.forEach(todo => {
-      return toggleTodo({
-        id: todo.id,
-        title: todo.title,
-        completed: !allCompleted,
-      });
+      return toggleTodo(todo.id);
     });
   };
 
