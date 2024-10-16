@@ -109,6 +109,7 @@ export const App: React.FC = () => {
 
   function toggleTodo(id: number) {
     const updatedTodo = todos.find(todo => todo.id === id);
+
     if (updatedTodo) {
       updateTodo({
         id,
