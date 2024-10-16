@@ -109,17 +109,16 @@ export const App: React.FC = () => {
 
   function toggleTodo(id: number) {
     const updatedTodo = todos.find(todo => todo.id === id);
-
     if (updatedTodo) {
       updateTodo({
         id,
         title: updatedTodo?.title,
         completed: !updatedTodo.completed,
       })
-        .then(() => {
+        .then(t => {
           setTodos((currentTodos: Todo[]) =>
             currentTodos.map(todo =>
-              todo.id === id ? { ...todo, completed: !todo.completed } : todo,
+              todo.id === id ? { ...todo, completed: t.completed } : todo,
             ),
           );
         })
@@ -132,13 +131,13 @@ export const App: React.FC = () => {
   }
 
   const toggleAll = () => {
-    if (allComleted) {
-      todos.forEach(todo => {return toggleTodo(todo.id)});
-    } 
+    const allChecked = todos.every(todo => todo.completed);
 
-    todos.filter(todo => todo.completed === allComleted).forEach(todo => {
-      return toggleTodo(todo.id);
-    });
+    if (!allChecked) {
+      todos.forEach(todo => toggleTodo(todo.id));
+    } else {
+      todos.filter(todo => todo.completed).forEach(todo => toggleTodo(todo.id));
+    }
   };
 
   if (!USER_ID) {
