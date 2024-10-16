@@ -135,9 +135,9 @@ export const App: React.FC = () => {
     const allChecked = todos.every(todo => todo.completed);
 
     if (!allChecked) {
-      todos.forEach(todo => toggleTodo(todo.id));
+      todos.filter(todo => !todo.completed).forEach(todo => toggleTodo(todo.id));
     } else {
-      todos.filter(todo => todo.completed).forEach(todo => toggleTodo(todo.id));
+      todos.forEach(todo => toggleTodo(todo.id));
     }
   };
 
