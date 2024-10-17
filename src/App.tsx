@@ -164,7 +164,10 @@ export const App: React.FC = () => {
           setErrorMessage('Unable to update a todo');
           setTimeout(() => setErrorMessage(''), 3000);
         })
-        .finally(() => setEditedTodoId(null));
+        .finally(() => {
+          setCurrentId(null);
+          setEditedTodoId(null);
+        });
     }
   }
 

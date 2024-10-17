@@ -26,8 +26,7 @@ export const TodoList: React.FC<Props> = ({
   setEditedTodoId,
   updateTitle,
 }) => {
-  
-  const [editedTitle, setEditedTitle] = useState('')
+  const [editedTitle, setEditedTitle] = useState('');
 
   const handleDelete = (id: number) => {
     setCurrentId(id);
@@ -40,19 +39,21 @@ export const TodoList: React.FC<Props> = ({
   };
 
   const handleDoubleClick = (id: number, title: string) => {
-    setEditedTodoId(id)
-    setEditedTitle(title)
+    setEditedTodoId(id);
+    setEditedTitle(title);
   };
 
-  const handleEditedTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setEditedTitle(event.target.value)
+  const handleEditedTitleChange = (
+    event: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    setEditedTitle(event.target.value);
   };
 
   const handleBlur = (id: number, title: string) => {
     if (title.trim() !== '') {
-      updateTitle(id, title.trim())
+      updateTitle(id, title.trim());
     } else {
-      deleteOneTodo(id)
+      deleteOneTodo(id);
     }
   };
 
@@ -60,18 +61,18 @@ export const TodoList: React.FC<Props> = ({
     event: React.KeyboardEvent<HTMLInputElement>,
     id: number,
     oldTitle: string,
-    newTitle: string
+    newTitle: string,
   ) => {
     if (event.key === 'Enter') {
+      setCurrentId(id)
       event.preventDefault();
       handleBlur(id, newTitle);
     }
-    
-    if (event.key === 'Escape') {
-      handleBlur(id, oldTitle)
-    }
-  }
 
+    if (event.key === 'Escape') {
+      handleBlur(id, oldTitle);
+    }
+  };
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -103,16 +104,18 @@ export const TodoList: React.FC<Props> = ({
                 value={editedTitle}
                 onChange={handleEditedTitleChange}
                 onBlur={() => handleBlur(todo.id, editedTitle)}
-                onKeyDown={(event) => handleKeyDown(event, todo.id, todo.title, editedTitle)}
+                onKeyDown={event =>
+                  handleKeyDown(event, todo.id, todo.title, editedTitle)
+                }
                 autoFocus
               />
             </form>
           ) : (
-              <span
-                data-cy="TodoTitle"
-                className="todo__title"
-                onDoubleClick={() => handleDoubleClick(todo.id, todo.title)}
-              >
+            <span
+              data-cy="TodoTitle"
+              className="todo__title"
+              onDoubleClick={() => handleDoubleClick(todo.id, todo.title)}
+            >
               {todo.title}
             </span>
           )}
