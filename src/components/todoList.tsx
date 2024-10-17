@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import cn from 'classnames';
 
 import { Todo } from '../types/Todo';
@@ -10,6 +10,9 @@ type Props = {
   toggleTodo: (id: number) => void;
   currentId: number | null;
   setCurrentId: (id: number | null) => void;
+  editedTodoId: number | null;
+  setEditedTodoId: (id: number | null) => void;
+  updateTitle: (id: number, newTitle: string) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
@@ -19,7 +22,13 @@ export const TodoList: React.FC<Props> = ({
   toggleTodo,
   currentId,
   setCurrentId,
+  editedTodoId,
+  setEditedTodoId,
+  updateTitle,
 }) => {
+  
+  const [editedTitle, setEditedTitle] = useState('')
+
   const handleDelete = (id: number) => {
     setCurrentId(id);
     deleteOneTodo(id);
@@ -29,6 +38,40 @@ export const TodoList: React.FC<Props> = ({
     setCurrentId(id);
     toggleTodo(id);
   };
+
+  const handleDoubleClick = (id: number, title: string) => {
+    setEditedTodoId(id)
+    setEditedTitle(title)
+  };
+
+  const handleEditedTitleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setEditedTitle(event.target.value)
+  };
+
+  const handleBlur = (id: number, title: string) => {
+    if (title.trim() !== '') {
+      updateTitle(id, title.trim())
+    } else {
+      deleteOneTodo(id)
+    }
+  };
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLInputElement>,
+    id: number,
+    oldTitle: string,
+    newTitle: string
+  ) => {
+    if (event.key === 'Enter') {
+      event.preventDefault();
+      handleBlur(id, newTitle);
+    }
+    
+    if (event.key === 'Escape') {
+      handleBlur(id, oldTitle)
+    }
+  }
+
 
   return (
     <section className="todoapp__main" data-cy="TodoList">
@@ -50,21 +93,41 @@ export const TodoList: React.FC<Props> = ({
             />
           </label>
 
-          <span data-cy="TodoTitle" className="todo__title">
-            {todo.title}
-          </span>
+          {editedTodoId === todo.id ? (
+            <form>
+              <input
+                data-cy="TodoTitleField"
+                type="text"
+                className="todo__title-field"
+                placeholder="Empty todo will be deleted"
+                value={editedTitle}
+                onChange={handleEditedTitleChange}
+                onBlur={() => handleBlur(todo.id, editedTitle)}
+                onKeyDown={(event) => handleKeyDown(event, todo.id, todo.title, editedTitle)}
+                autoFocus
+              />
+            </form>
+          ) : (
+              <span
+                data-cy="TodoTitle"
+                className="todo__title"
+                onDoubleClick={() => handleDoubleClick(todo.id, todo.title)}
+              >
+              {todo.title}
+            </span>
+          )}
 
-          {/* Remove button appears only on hover */}
-          <button
-            type="button"
-            className="todo__remove"
-            data-cy="TodoDelete"
-            onClick={() => handleDelete(todo.id)}
-          >
-            ×
-          </button>
+          {!editedTodoId && (
+            <button
+              type="button"
+              className="todo__remove"
+              data-cy="TodoDelete"
+              onClick={() => handleDelete(todo.id)}
+            >
+              ×
+            </button>
+          )}
 
-          {/* overlay will cover the todo while it is being deleted or updated */}
           <div
             data-cy="TodoLoader"
             className={cn('modal overlay', {
@@ -76,11 +139,6 @@ export const TodoList: React.FC<Props> = ({
           </div>
         </div>
       ))}
-
-      <div data-cy="TodoLoader" className="modal overlay">
-        <div className="modal-background has-background-white-ter" />
-        <div className="loader" />
-      </div>
 
       {tempTodo && (
         <div

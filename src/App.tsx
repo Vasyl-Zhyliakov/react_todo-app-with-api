@@ -25,6 +25,7 @@ export const App: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [currentId, setCurrentId] = useState<number | null>(null);
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
+  const [editedTodoId, setEditedTodoId] = useState<number | null>(null);
 
   function getVisibleTodos(filt: Filter) {
     switch (filt) {
@@ -135,11 +136,37 @@ export const App: React.FC = () => {
     const allChecked = todos.every(todo => todo.completed);
 
     if (!allChecked) {
-      todos.filter(todo => !todo.completed).forEach(todo => toggleTodo(todo.id));
+      todos
+        .filter(todo => !todo.completed)
+        .forEach(todo => toggleTodo(todo.id));
     } else {
       todos.forEach(todo => toggleTodo(todo.id));
     }
   };
+
+  function updateTitle(id: number, newTitle: string) {
+    const updatedTodo = todos.find(todo => todo.id === id);
+
+    if (updatedTodo) {
+      updateTodo({
+        id,
+        title: newTitle,
+        completed: updatedTodo.completed,
+      })
+        .then(t => {
+          setTodos((currentTodos: Todo[]) =>
+            currentTodos.map(todo =>
+              todo.id === id ? { ...todo, title: t.title } : todo,
+            ),
+          );
+        })
+        .catch(() => {
+          setErrorMessage('Unable to update a todo');
+          setTimeout(() => setErrorMessage(''), 3000);
+        })
+        .finally(() => setEditedTodoId(null));
+    }
+  }
 
   if (!USER_ID) {
     return <UserWarning />;
@@ -168,6 +195,9 @@ export const App: React.FC = () => {
           currentId={currentId}
           setCurrentId={setCurrentId}
           toggleTodo={toggleTodo}
+          editedTodoId={editedTodoId}
+          setEditedTodoId={setEditedTodoId}
+          updateTitle={updateTitle}
         />
 
         {todos.length > 0 && (
