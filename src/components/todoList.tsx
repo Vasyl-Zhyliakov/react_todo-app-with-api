@@ -51,6 +51,7 @@ export const TodoList: React.FC<Props> = ({
 
   const handleBlur = (id: number, title: string) => {
     if (title.trim() !== '') {
+      setEditedTodoId(null);
       updateTitle(id, title.trim());
     } else {
       deleteOneTodo(id);
@@ -64,7 +65,7 @@ export const TodoList: React.FC<Props> = ({
     newTitle: string,
   ) => {
     if (event.key === 'Enter') {
-      setCurrentId(id)
+      setCurrentId(id);
       event.preventDefault();
       handleBlur(id, newTitle);
     }
